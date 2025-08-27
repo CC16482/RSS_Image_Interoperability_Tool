@@ -1,4 +1,4 @@
-﻿<Application x:Class="RC2CesiumPins.App"
+<Application x:Class="RSS_Image_Interoperability_Tool.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
