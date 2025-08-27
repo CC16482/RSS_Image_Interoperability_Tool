@@ -1,0 +1,161 @@
+﻿<Application x:Class="RC2CesiumPins.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+
+        <!-- ===== RSS Dark Palette ===== -->
+        <SolidColorBrush x:Key="DarkModeBackground" Color="#FF1E1E1E"/>
+        <SolidColorBrush x:Key="DarkModeLevel2Background" Color="#FF2D2D30"/>
+        <SolidColorBrush x:Key="DarkModeLevel3Background" Color="#FF3F3F46"/>
+        <SolidColorBrush x:Key="DarkModeForeground" Color="#FFF1F1F1"/>
+        <SolidColorBrush x:Key="DarkModeSecondaryForeground" Color="#FFB0B0B0"/>
+        <SolidColorBrush x:Key="DarkModeBorderBrush" Color="#FF3F3F46"/>
+        <SolidColorBrush x:Key="DarkModeFocusBorderBrush" Color="#FF007ACC"/>
+        <SolidColorBrush x:Key="DarkModeAccentBrush" Color="#FF007ACC"/>
+        <SolidColorBrush x:Key="DarkModeDisabledForegroundBrush" Color="#FF6A6A6A"/>
+        <SolidColorBrush x:Key="DarkModeDisabledBackgroundBrush" Color="#FF2A2A2A"/>
+        <SolidColorBrush x:Key="DarkModeErrorBrush" Color="#FFCF6679"/>
+        <SolidColorBrush x:Key="DarkModeSuccessBrush" Color="#FF66BB6A"/>
+        <SolidColorBrush x:Key="DarkModeHyperlinkBrush" Color="#FF9CDCFE"/>
+        <SolidColorBrush x:Key="ComboBoxHighlightBrush" Color="#FF3EA6FF"/>
+
+        <!-- ===== Base control styles ===== -->
+
+        <!-- Window defaults -->
+        <Style TargetType="Window">
+            <Setter Property="Background" Value="{StaticResource DarkModeBackground}"/>
+            <Setter Property="Foreground" Value="{StaticResource DarkModeForeground}"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <!-- Muted text -->
+        <Style x:Key="MutedText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource DarkModeSecondaryForeground}"/>
+        </Style>
+
+        <!-- Buttons -->
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource DarkModeAccentBrush}"/>
+            <Setter Property="Foreground" Value="#FFFFFFFF"/>
+            <Setter Property="BorderBrush" Value="{StaticResource DarkModeAccentBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Margin="6,2"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF3EA6FF"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF3EA6FF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF005A9E"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF005A9E"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource DarkModeDisabledBackgroundBrush}"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource DarkModeDisabledBackgroundBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource DarkModeDisabledForegroundBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TextBoxes -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="{StaticResource DarkModeLevel2Background}"/>
+            <Setter Property="Foreground" Value="{StaticResource DarkModeForeground}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource DarkModeBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="CaretBrush" Value="{StaticResource DarkModeForeground}"/>
+            <Setter Property="SelectionBrush" Value="{StaticResource DarkModeAccentBrush}"/>
+            <Style.Triggers>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource DarkModeFocusBorderBrush}"/>
+                    <Setter Property="Background" Value="{StaticResource DarkModeLevel3Background}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="{StaticResource DarkModeDisabledBackgroundBrush}"/>
+                    <Setter Property="Foreground" Value="{StaticResource DarkModeDisabledForegroundBrush}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource DarkModeDisabledBackgroundBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- GroupBox -->
+        <ControlTemplate x:Key="DarkGroupBoxTemplate" TargetType="{x:Type GroupBox}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="6"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="6"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="6"/>
+                </Grid.RowDefinitions>
+                <Border Background="{TemplateBinding Background}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                CornerRadius="4"
+                Grid.ColumnSpan="4" Grid.RowSpan="3" Grid.Column="0" Grid.Row="1"/>
+                <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                Padding="3,1,3,0"
+                Background="{StaticResource DarkModeBackground}">
+                    <ContentPresenter ContentSource="Header">
+                        <ContentPresenter.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{StaticResource DarkModeForeground}"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Style>
+                        </ContentPresenter.Resources>
+                    </ContentPresenter>
+                </Border>
+                <ContentPresenter Grid.Column="1" Grid.ColumnSpan="2"
+                          Grid.Row="2" Margin="{TemplateBinding Padding}"/>
+            </Grid>
+        </ControlTemplate>
+
+        <Style TargetType="GroupBox">
+            <Setter Property="Background" Value="{StaticResource DarkModeLevel2Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource DarkModeBorderBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource DarkModeForeground}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Template" Value="{StaticResource DarkGroupBoxTemplate}"/>
+        </Style>
+
+        <!-- ListView -->
+        <Style TargetType="ListView">
+            <Setter Property="Background" Value="{StaticResource DarkModeLevel2Background}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource DarkModeBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="{StaticResource DarkModeForeground}"/>
+        </Style>
+
+        <!-- Separator -->
+        <Style TargetType="Separator">
+            <Setter Property="Background" Value="{StaticResource DarkModeBorderBrush}"/>
+            <Setter Property="Height" Value="1"/>
+            <Setter Property="Margin" Value="0,10,0,10"/>
+        </Style>
+
+    </Application.Resources>
+</Application>

@@ -1,0 +1,220 @@
+﻿<Window x:Class="RC2CesiumPins.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="RSS Image Interoperability Tool"
+        Height="860" Width="1400"
+        MinHeight="720" MinWidth="1200"
+        AllowDrop="True" Drop="Window_Drop" DragOver="Window_DragOver">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <DockPanel Margin="0,0,0,12">
+            <TextBlock DockPanel.Dock="Left"
+                 Text="RSS Image Interoperability Tool"
+                 FontSize="24" FontWeight="Bold"/>
+            <TextBlock DockPanel.Dock="Right"
+                 Text="(drag &amp; drop CSV or image files/folders anywhere)"
+                 Style="{StaticResource MutedText}" Margin="8,6,0,0"/>
+        </DockPanel>
+
+        <!-- Body -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.6*"/>
+                <ColumnDefinition Width="2.0*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- LEFT COLUMN: Stats → Imports → Images & Preview -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Project stats (top) -->
+                <GroupBox Header="Project stats" Grid.Row="0" Margin="0,0,0,10">
+                    <Border BorderThickness="1"
+                  BorderBrush="{StaticResource DarkModeBorderBrush}"
+                  Background="{StaticResource DarkModeBackground}"
+                  Padding="10" CornerRadius="6">
+                        <StackPanel>
+                            <UniformGrid Columns="2" Rows="4">
+                                <TextBlock Text="CSV rows:"/>
+                                <TextBlock x:Name="CsvCountText" Text="0"/>
+                                <TextBlock Text="Images found:"/>
+                                <TextBlock x:Name="ImgCountText" Text="0"/>
+                                <TextBlock Text="Matched filenames:"/>
+                                <TextBlock x:Name="MatchCountText" Text="0"/>
+                                <TextBlock Text="Missing images (in CSV only):"/>
+                                <TextBlock x:Name="MissingCountText" Text="0"/>
+                            </UniformGrid>
+                            <TextBlock x:Name="CoordSummaryText" Margin="0,8,0,0" Style="{StaticResource MutedText}"/>
+                        </StackPanel>
+                    </Border>
+                </GroupBox>
+
+                <!-- Imports -->
+                <GroupBox Header="Imports" Grid.Row="1" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="RealityCapture Cameras CSV" FontWeight="Bold"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,8">
+                            <TextBox x:Name="CsvPathBox" Width="600" IsReadOnly="True"/>
+                            <Button Content="Browse…" Margin="6,0,0,0" Click="BrowseCsv_Click"/>
+                        </StackPanel>
+
+                        <TextBlock Text="Images" FontWeight="Bold"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBox x:Name="ImagesPathBox" Width="600" IsReadOnly="True"/>
+                            <Button Content="Add Files…" Margin="6,0,0,0" Click="AddImageFiles_Click"/>
+                            <Button Content="Add Folder…" Margin="6,0,0,0" Click="AddImageFolder_Click"/>
+                            <Button Content="Clear" Margin="6,0,0,0" Click="ClearImages_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+
+                <!-- Big Images & Preview panel -->
+                <GroupBox Header="Images &amp; Preview" Grid.Row="2">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Scrollable image list -->
+                        <ListView x:Name="ImagesList"
+                      Grid.Row="0"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      SelectionChanged="ImagesList_SelectionChanged">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding Name}" Width="520"/>
+                                    <GridViewColumn Header="Path" DisplayMemberBinding="{Binding FullPath}" Width="300"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+
+                        <Separator Grid.Row="1"/>
+
+                        <!-- Image preview -->
+                        <Border Grid.Row="2"
+                    Background="{StaticResource DarkModeBackground}"
+                    BorderBrush="{StaticResource DarkModeBorderBrush}"
+                    BorderThickness="1" Padding="8" CornerRadius="6">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="260"/>
+                                </Grid.ColumnDefinitions>
+
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Auto">
+                                    <Image x:Name="PreviewImage"
+                         Stretch="Uniform"
+                         MaxHeight="480"
+                         RenderOptions.BitmapScalingMode="Fant"
+                         SnapsToDevicePixels="True"/>
+                                </ScrollViewer>
+
+                                <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                    <TextBlock Text="Preview details" FontWeight="Bold"/>
+                                    <TextBlock x:Name="PreviewNameText" Style="{StaticResource MutedText}" Margin="0,6,0,0"/>
+                                    <TextBlock x:Name="PreviewDimText"  Style="{StaticResource MutedText}" Margin="0,2,0,0"/>
+                                    <TextBlock x:Name="PreviewPathText" Style="{StaticResource MutedText}" Margin="0,6,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+
+            <!-- MIDDLE COLUMN: Settings -->
+            <GroupBox Header="Settings" Grid.Column="1">
+                <StackPanel>
+                    <TextBlock Text="Coordinate Mode" FontWeight="Bold"/>
+                    <StackPanel Orientation="Vertical" Margin="0,4,0,8">
+                        <RadioButton x:Name="ModeWgs84Radio"
+                         Content="CSV x=lon (deg), y=lat (deg), alt=height (m) — already WGS84"
+                         IsChecked="True" Checked="CoordModeChanged"/>
+                        <RadioButton x:Name="ModeLocalRadio"
+                         Content="CSV x,y,alt are LOCAL ENU (meters) — use Project Origin (lon/lat/height)"
+                         Checked="CoordModeChanged"/>
+                    </StackPanel>
+
+                    <StackPanel x:Name="OriginPanel" IsEnabled="False">
+                        <TextBlock Text="Project Origin (used only for Local ENU mode)" FontWeight="Bold" Margin="0,8,0,6"/>
+                        <UniformGrid Columns="2">
+                            <TextBlock Text="Origin Longitude (deg):" VerticalAlignment="Center"/>
+                            <TextBox x:Name="OriginLonBox" Text="153.0"/>
+                            <TextBlock Text="Origin Latitude (deg):" VerticalAlignment="Center"/>
+                            <TextBox x:Name="OriginLatBox" Text="-27.0"/>
+                            <TextBlock Text="Origin Height (m):" VerticalAlignment="Center"/>
+                            <TextBox x:Name="OriginHgtBox" Text="0"/>
+                        </UniformGrid>
+                    </StackPanel>
+
+                    <Separator/>
+
+                    <TextBlock Text="URLs written into GeoJSON" FontWeight="Bold"/>
+                    <UniformGrid Columns="2" Rows="3" Margin="0,4,0,0">
+                        <TextBlock Text="Images base URL (or file:/// base)" VerticalAlignment="Center"/>
+                        <TextBox x:Name="ImagesBaseUrlBox" Text="/images/"/>
+                        <TextBlock Text="Thumbnails base URL" VerticalAlignment="Center"/>
+                        <TextBox x:Name="ThumbsBaseUrlBox" Text="/thumbnails/"/>
+                        <TextBlock Text="Pin icon (relative URL)" VerticalAlignment="Center"/>
+                        <TextBox x:Name="PinIconUrlBox" Text="/icons/camera-pin.png"/>
+                    </UniformGrid>
+
+                    <CheckBox x:Name="UseFileSchemeCheck"
+                    Content="Use file:/// URLs from imported image locations (overrides Images base URL when available)"
+                    Margin="0,6,0,0"/>
+
+                    <Separator Margin="0,12,0,12"/>
+
+                    <TextBlock Text="Export Options" FontWeight="Bold" />
+                    <StackPanel Margin="0,6,0,0">
+                        <CheckBox x:Name="OnlyMatchedCheck" Content="Export only rows that have a matching image" Margin="0,6,0,0"/>
+                        <CheckBox x:Name="IncludeExifCheck" Content="Include EXIF &amp; file properties in GeoJSON" Margin="0,6,0,0" IsChecked="True"/>
+                        <TextBlock Text="Output filename (suggested):" Margin="0,8,0,2"/>
+                        <TextBox x:Name="SingleFileNameBox" Text="cameras.geojson" />
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- RIGHT COLUMN: CSV rows preview -->
+            <GroupBox Header="CSV Rows (unmatched highlighted)" Grid.Column="2">
+                <ListView x:Name="PreviewList" BorderThickness="1">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding Name}" Width="300"/>
+                            <GridViewColumn Header="x" DisplayMemberBinding="{Binding X}" Width="100"/>
+                            <GridViewColumn Header="y" DisplayMemberBinding="{Binding Y}" Width="100"/>
+                            <GridViewColumn Header="alt" DisplayMemberBinding="{Binding Alt}" Width="90"/>
+                            <GridViewColumn Header="heading" DisplayMemberBinding="{Binding Heading}" Width="90"/>
+                            <GridViewColumn Header="pitch" DisplayMemberBinding="{Binding Pitch}" Width="90"/>
+                            <GridViewColumn Header="roll" DisplayMemberBinding="{Binding Roll}" Width="90"/>
+                            <GridViewColumn Header="Matched" DisplayMemberBinding="{Binding HasImage}" Width="90"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </GroupBox>
+        </Grid>
+
+        <!-- Footer -->
+        <DockPanel Grid.Row="2" Margin="0,12,0,0">
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                <TextBox x:Name="OutPathBox" Width="760" IsReadOnly="True" Margin="0,0,6,0"/>
+                <Button Content="Choose Output…" Click="ChooseOutput_Click"/>
+            </StackPanel>
+            <Button Content="Export GeoJSON" HorizontalAlignment="Right" Width="200" Click="Export_Click"/>
+        </DockPanel>
+    </Grid>
+</Window>
