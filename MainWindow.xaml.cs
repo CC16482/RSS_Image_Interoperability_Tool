@@ -76,6 +76,14 @@ namespace RSS_Image_Interoperability_Tool
             }
         }
 
+        private void ClearCsv_Click(object sender, RoutedEventArgs e)
+        {
+            CsvPathBox.Text = "";
+            _csvRows.Clear();
+            CsvRowsGrid.ItemsSource = null;
+            UpdateStatsAndPreview();
+        }
+
         private void AddImageFiles_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog
