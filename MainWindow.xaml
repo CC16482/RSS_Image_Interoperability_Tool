@@ -251,12 +251,16 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="80"/>    <!-- NEW: Clear -->
                             </Grid.ColumnDefinitions>
-                            <StackPanel Orientation="Vertical" Grid.ColumnSpan="2">
+
+                            <StackPanel Orientation="Vertical" Grid.ColumnSpan="3">
                                 <TextBlock Text="RealityCapture Cameras CSV" FontWeight="SemiBold" Margin="0,0,0,4" Foreground="White"/>
                             </StackPanel>
+
                             <TextBox x:Name="CsvPathBox" Grid.Column="0" IsReadOnly="True" Margin="0,0,6,0"/>
-                            <Button Grid.Column="1" Content="Import CSV..." Click="BrowseCsv_Click"/>
+                            <Button Grid.Column="1" Content="Import CSV..." Click="BrowseCsv_Click" Margin="0,0,6,0"/>
+                            <Button Grid.Column="2" Content="Clear" Click="ClearCsv_Click"/>   <!-- NEW -->
                         </Grid>
 
                         <!-- Images -->
@@ -288,9 +292,38 @@
                               CanUserDeleteRows="False"
                               EnableRowVirtualization="True"
                               SelectionUnit="CellOrRowHeader"
-                              RowStyle="{StaticResource BlueRowStyle}"
-                              CellStyle="{StaticResource WhiteSelectedCellStyle}"
+                              SelectionMode="Extended"
                               SelectionChanged="ImagesList_SelectionChanged">
+
+                        <!-- Blue row highlight -->
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="Background" Value="{StaticResource DarkModeLevel2Background}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#223EA6FF"/>   <!-- subtle blue fill -->
+                                        <Setter Property="BorderBrush" Value="#FF3EA6FF"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+
+                        <!-- White active cell; non-active cells keep row blue -->
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="White"/>
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.CellStyle>
+
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Filename" Binding="{Binding Name}" Width="240"/>
                             <DataGridTextColumn Header="Path" Binding="{Binding FullPath}" Width="*"/>
@@ -458,8 +491,22 @@
                               CanUserDeleteRows="False"
                               EnableRowVirtualization="True"
                               SelectionUnit="CellOrRowHeader"
-                              RowStyle="{StaticResource CsvRowColorStyle}"
-                              CellStyle="{StaticResource WhiteSelectedCellStyle}">
+                              SelectionMode="Extended"
+                              RowStyle="{StaticResource CsvRowColorStyle}">
+
+                        <!-- White active cell on selection -->
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="White"/>
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.CellStyle>
                     </DataGrid>
                 </GroupBox>
             </Grid>
