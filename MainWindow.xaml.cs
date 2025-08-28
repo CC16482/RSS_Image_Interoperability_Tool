@@ -1,14 +1,15 @@
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Controls;
-using System.Collections.ObjectModel;
 using System.Windows.Media.Imaging;
 
 // EXIF
@@ -19,23 +20,51 @@ namespace RSS_Image_Interoperability_Tool
 {
     public partial class MainWindow : Window
     {
-        private List<CameraRow> _csvRows = new();
+        private static readonly JsonSerializerOptions s_jsonOpts = new() { WriteIndented = true };
+
+        private readonly List<CameraRow> _csvRows = new();
+
         // filename -> full path
         private readonly Dictionary<string, string> _imagePaths = new(StringComparer.OrdinalIgnoreCase);
-        // cache of EXIF/file props keyed by full path
+
+        // EXIF/file-props cache keyed by full path
         private readonly Dictionary<string, Dictionary<string, object>> _exifCache =
             new(StringComparer.OrdinalIgnoreCase);
 
-        // UI list + preview
-        public class ImageItem { public string Name { get; set; } = ""; public string FullPath { get; set; } = ""; }
+        public class ImageItem
+        {
+            public string Name { get; set; } = "";
+            public string FullPath { get; set; } = "";
+            public string Modified { get; set; } = "";
+            public long SizeKb { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+        }
         private readonly ObservableCollection<ImageItem> _imageItems = new();
 
         public MainWindow()
         {
             InitializeComponent();
+
+            Loaded += (_, __) =>
+            {
+                // Radio-behaviour and coord mode recalculation
+                ModeWgs84Radio.Checked += (_, __2) => { ModeLocalRadio.IsChecked = false; ApplyCoordMode(); };
+                ModeLocalRadio.Checked += (_, __2) => { ModeWgs84Radio.IsChecked = false; ApplyCoordMode(); };
+                ModeWgs84Radio.Unchecked += (_, __2) => ApplyCoordMode();
+                ModeLocalRadio.Unchecked += (_, __2) => ApplyCoordMode();
+
+                ApplyCoordMode();
+            };
         }
 
-        // ===== UI actions =====
+        private void ApplyCoordMode()
+        {
+            OriginPanel.IsEnabled = ModeLocalRadio.IsChecked == true;
+            if (IsLoaded) UpdateStatsAndPreview();
+        }
+
+        /* ======================= IMPORTS ======================= */
         private void BrowseCsv_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new OpenFileDialog { Filter = "CSV files|*.csv|All files|*.*" };
@@ -71,7 +100,7 @@ namespace RSS_Image_Interoperability_Tool
             {
                 var exts = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".webp" };
                 var files = System.IO.Directory.EnumerateFiles(dlg.SelectedPath, "*.*", SearchOption.AllDirectories)
-                               .Where(p => exts.Contains(System.IO.Path.GetExtension(p)));
+                                               .Where(p => exts.Contains(System.IO.Path.GetExtension(p)));
                 foreach (var p in files)
                     _imagePaths[System.IO.Path.GetFileName(p)] = p;
 
@@ -87,12 +116,14 @@ namespace RSS_Image_Interoperability_Tool
             UpdateStatsAndPreview();
         }
 
+        /* ======================= EXPORT ======================= */
         private void ChooseOutput_Click(object sender, RoutedEventArgs e)
         {
+            var suggested = string.IsNullOrWhiteSpace(SingleFileNameBox.Text) ? "cameras.geojson" : SingleFileNameBox.Text;
             var dlg = new SaveFileDialog
             {
                 Filter = "GeoJSON|*.geojson|JSON|*.json|All files|*.*",
-                FileName = string.IsNullOrWhiteSpace(SingleFileNameBox.Text) ? "cameras.geojson" : SingleFileNameBox.Text
+                FileName = suggested
             };
             if (dlg.ShowDialog() == true) OutPathBox.Text = dlg.FileName;
         }
@@ -116,7 +147,6 @@ namespace RSS_Image_Interoperability_Tool
                 }
             }
 
-            // Filter rows if needed
             var rows = _csvRows;
             if (OnlyMatchedCheck.IsChecked == true)
                 rows = _csvRows.Where(r => r.HasImage).ToList();
@@ -131,7 +161,7 @@ namespace RSS_Image_Interoperability_Tool
             string baseThumb = ThumbsBaseUrlBox.Text?.Trim() ?? "";
             string pinIcon = PinIconUrlBox.Text?.Trim() ?? "/icons/camera-pin.png";
 
-            var features = new List<object>(rows.Count);
+            List<object> features = new(rows.Count);
             foreach (var row in rows)
             {
                 double lon, lat, h;
@@ -140,7 +170,7 @@ namespace RSS_Image_Interoperability_Tool
                 else
                     (lon, lat, h) = (row.X, row.Y, row.Alt);
 
-                string imgUrl = BuildImageUrl(row.Name, baseImg); // file:/// if enabled & path known
+                string imgUrl = BuildImageUrl(row.Name, baseImg);
                 string thumbUrl = CombineUrl(baseThumb, row.Name);
 
                 Dictionary<string, object>? exifProps = null;
@@ -167,16 +197,11 @@ namespace RSS_Image_Interoperability_Tool
             }
 
             var fc = new { type = "FeatureCollection", features };
-            File.WriteAllText(OutPathBox.Text, JsonSerializer.Serialize(fc, new JsonSerializerOptions { WriteIndented = true }));
+            File.WriteAllText(OutPathBox.Text, JsonSerializer.Serialize(fc, s_jsonOpts));
             MessageBox.Show($"Exported GeoJSON:\n{OutPathBox.Text}");
         }
 
-        private void CoordModeChanged(object sender, RoutedEventArgs e)
-        {
-            OriginPanel.IsEnabled = ModeLocalRadio.IsChecked == true;
-            UpdateStatsAndPreview();
-        }
-
+        /* ======================= DRAG & DROP ======================= */
         private void Window_DragOver(object sender, DragEventArgs e)
         {
             e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
@@ -195,7 +220,7 @@ namespace RSS_Image_Interoperability_Tool
                 if (System.IO.Directory.Exists(p))
                 {
                     foreach (var f in System.IO.Directory.EnumerateFiles(p, "*.*", SearchOption.AllDirectories)
-                                                         .Where(f => exts.Contains(System.IO.Path.GetExtension(f))))
+                                 .Where(f => exts.Contains(System.IO.Path.GetExtension(f))))
                         _imagePaths[System.IO.Path.GetFileName(f)] = f;
                 }
                 else if (File.Exists(p))
@@ -216,64 +241,54 @@ namespace RSS_Image_Interoperability_Tool
             UpdateStatsAndPreview();
         }
 
-        private void ImagesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var item = ImagesList.SelectedItem as ImageItem;
-            PreviewImage.Source = null;
-            PreviewNameText.Text = "";
-            PreviewDimText.Text = "";
-            PreviewPathText.Text = "";
+        /* ======================= DATA / UI ======================= */
 
-            if (item == null || !File.Exists(item.FullPath)) return;
-
-            try
-            {
-                var bmp = new BitmapImage();
-                bmp.BeginInit();
-                bmp.CacheOption = BitmapCacheOption.OnLoad;
-                bmp.UriSource = new Uri(item.FullPath);
-                bmp.EndInit();
-                bmp.Freeze();
-
-                PreviewImage.Source = bmp;
-                PreviewNameText.Text = item.Name;
-                PreviewDimText.Text = $"{bmp.PixelWidth} × {bmp.PixelHeight}";
-                PreviewPathText.Text = item.FullPath;
-            }
-            catch
-            {
-                // ignore preview errors
-            }
-        }
-
-        // ===== helpers =====
         private void LoadCsv(string path)
         {
             _csvRows.Clear();
+
             using var sr = new StreamReader(path);
-            string? header = sr.ReadLine();
-            if (header == null) { MessageBox.Show("Empty CSV."); return; }
+
+            // 1) Find the header row (skip blank/comment lines)
+            string? header = null;
+            while (!sr.EndOfStream)
+            {
+                var line = sr.ReadLine();
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                if (line.StartsWith("#") && !line.Contains(',')) continue;
+                header = line;
+                break;
+            }
+            if (header is null) { MessageBox.Show("CSV appears empty."); return; }
 
             var cols = header.Split(',');
-            int idxName = Array.FindIndex(cols, c => c.Trim().Equals("#name", StringComparison.OrdinalIgnoreCase) || c.Trim().Equals("name", StringComparison.OrdinalIgnoreCase));
-            int idxX = Array.FindIndex(cols, c => c.Trim().Equals("x", StringComparison.OrdinalIgnoreCase));
-            int idxY = Array.FindIndex(cols, c => c.Trim().Equals("y", StringComparison.OrdinalIgnoreCase));
-            int idxAlt = Array.FindIndex(cols, c => c.Trim().Equals("alt", StringComparison.OrdinalIgnoreCase));
-            int idxHeading = Array.FindIndex(cols, c => c.Trim().Equals("heading", StringComparison.OrdinalIgnoreCase));
-            int idxPitch = Array.FindIndex(cols, c => c.Trim().Equals("pitch", StringComparison.OrdinalIgnoreCase));
-            int idxRoll = Array.FindIndex(cols, c => c.Trim().Equals("roll", StringComparison.OrdinalIgnoreCase));
+            string Norm(string s) => s.Trim().TrimStart('#').ToLowerInvariant();
+
+            int idxName = Array.FindIndex(cols, c => Norm(c) is "name" or "_name" or "#name");
+            int idxX = Array.FindIndex(cols, c => new[] { "x", "lon", "longitude" }.Contains(Norm(c)));
+            int idxY = Array.FindIndex(cols, c => new[] { "y", "lat", "latitude" }.Contains(Norm(c)));
+            int idxAlt = Array.FindIndex(cols, c => new[] { "alt", "z", "height", "h" }.Contains(Norm(c)));
+            int idxHeading = Array.FindIndex(cols, c => new[] { "heading", "yaw", "kappa" }.Contains(Norm(c)));
+            int idxPitch = Array.FindIndex(cols, c => new[] { "pitch", "phi" }.Contains(Norm(c)));
+            int idxRoll = Array.FindIndex(cols, c => new[] { "roll", "omega" }.Contains(Norm(c)));
 
             if (idxName < 0 || idxX < 0 || idxY < 0 || idxAlt < 0 || idxHeading < 0 || idxPitch < 0 || idxRoll < 0)
             {
-                MessageBox.Show("CSV is missing required columns (#name, x, y, alt, heading, pitch, roll).");
+                MessageBox.Show(
+                    "CSV is missing required columns.\n\nAccepted names:\n" +
+                    "name → #name/name/_name\nx → x/lon/longitude\ny → y/lat/latitude\nalt → alt/z/height/h\n" +
+                    "heading → heading/yaw/kappa\npitch → pitch/phi\nroll → roll/omega");
                 return;
             }
 
-            string? line;
-            while ((line = sr.ReadLine()) != null)
+            // 2) read data
+            string? line2;
+            while ((line2 = sr.ReadLine()) != null)
             {
-                var parts = SplitCsvLine(line, cols.Length);
-                if (parts.Length != cols.Length) continue;
+                if (string.IsNullOrWhiteSpace(line2)) continue;
+                if (line2.StartsWith("#")) continue;
+                var parts = SplitCsvLine(line2, cols.Length);
+                if (parts.Length < cols.Length) continue;
 
                 _csvRows.Add(new CameraRow
                 {
@@ -283,7 +298,7 @@ namespace RSS_Image_Interoperability_Tool
                     Alt = ParseInv(parts[idxAlt]),
                     Heading = ParseInv(parts[idxHeading]),
                     Pitch = ParseInv(parts[idxPitch]),
-                    Roll = ParseInv(parts[idxRoll]),
+                    Roll = ParseInv(parts[idxRoll])
                 });
             }
         }
@@ -317,6 +332,9 @@ namespace RSS_Image_Interoperability_Tool
 
         private void UpdateStatsAndPreview()
         {
+            if (ModeWgs84Radio.IsChecked == true && ModeLocalRadio.IsChecked == true)
+                ModeLocalRadio.IsChecked = false;
+
             int matched = 0;
             foreach (var r in _csvRows)
             {
@@ -331,42 +349,62 @@ namespace RSS_Image_Interoperability_Tool
 
             CoordSummaryText.Text = ModeLocalRadio.IsChecked == true
                 ? "Coordinate mode: LOCAL ENU (meters) → will convert using Project Origin."
-                : "Coordinate mode: WGS84 (x=lon, y=lat, alt=height) → will export as-is.";
+                : "Coordinate mode: WGS84 (x=lon, y=lat, alt=height) — will export as-is.";
 
-            PreviewList.ItemsSource = null;
-            PreviewList.ItemsSource = _csvRows;
+            // Bind CSV rows (colors handled by RowStyle triggers)
+            CsvRowsGrid.ItemsSource = null;
+            CsvRowsGrid.ItemsSource = _csvRows;
 
-            // unmatched rows highlighted
-            PreviewList.ItemContainerStyle = new Style(typeof(ListViewItem))
+            // Build image list off-UI thread (fast EXIF for width/height)
+            Task.Run(() =>
             {
-                Setters = { new Setter(ListViewItem.BackgroundProperty, Brushes.Transparent) },
-                Triggers = {
-                    new DataTrigger {
-                        Binding = new System.Windows.Data.Binding("HasImage"),
-                        Value = false,
-                        Setters = { new Setter(ListViewItem.BackgroundProperty,
-                                   new SolidColorBrush(Color.FromRgb(255,244,244))) }
-                    }
-                }
-            };
+                var items = new List<ImageItem>(_imagePaths.Count);
 
-            // rebuild image list
-            _imageItems.Clear();
-            foreach (var kvp in _imagePaths.OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
-                _imageItems.Add(new ImageItem { Name = kvp.Key, FullPath = kvp.Value });
-            ImagesList.ItemsSource = _imageItems;
+                foreach (var kvp in _imagePaths.OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
+                {
+                    var fi = new FileInfo(kvp.Value);
+                    int w = 0, h = 0;
+                    try
+                    {
+                        var dirs = ImageMetadataReader.ReadMetadata(kvp.Value);
+                        var sub = dirs.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+                        if (sub != null)
+                        {
+                            w = sub.GetInt32(ExifDirectoryBase.TagExifImageWidth);
+                            h = sub.GetInt32(ExifDirectoryBase.TagExifImageHeight);
+                        }
+                    }
+                    catch { /* leave 0x0 */ }
+
+                    items.Add(new ImageItem
+                    {
+                        Name = kvp.Key,
+                        FullPath = kvp.Value,
+                        Modified = fi.LastWriteTime.ToString("yyyy-MM-dd HH:mm"),
+                        SizeKb = fi.Length / 1024,
+                        Width = w,
+                        Height = h
+                    });
+                }
+
+                Dispatcher.Invoke(() =>
+                {
+                    _imageItems.Clear();
+                    foreach (var it in items) _imageItems.Add(it);
+                    ImagesList.ItemsSource = _imageItems;
+                });
+            });
         }
 
         private static string CombineUrl(string baseUrl, string tail)
         {
             if (string.IsNullOrEmpty(baseUrl)) return tail;
-            if (!baseUrl.EndsWith("/")) baseUrl += "/";
+            if (!baseUrl.EndsWith('/')) baseUrl += "/";
             return baseUrl + tail;
         }
 
         private string BuildImageUrl(string fileName, string baseUrl)
         {
-            // If user chose file:/// URLs and we know the full path, use it
             if (UseFileSchemeCheck.IsChecked == true &&
                 _imagePaths.TryGetValue(fileName, out var fullPath))
             {
@@ -375,6 +413,43 @@ namespace RSS_Image_Interoperability_Tool
             }
             return CombineUrl(baseUrl, fileName);
         }
+
+        /* ======================= PREVIEW ======================= */
+        private void ImagesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ImagesList.SelectedItem is not ImageItem item || !File.Exists(item.FullPath))
+            {
+                PreviewImage.Source = null;
+                PreviewNameText.Text = "";
+                PreviewDimText.Text = "";
+                ExifDetailsPanel.ItemsSource = null;
+                return;
+            }
+
+            try
+            {
+                var bmp = new BitmapImage();
+                bmp.BeginInit();
+                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                bmp.UriSource = new Uri(item.FullPath);
+                bmp.EndInit();
+                bmp.Freeze();
+
+                PreviewImage.Source = bmp;
+                PreviewNameText.Text = item.Name;
+                PreviewDimText.Text = $"{bmp.PixelWidth} × {bmp.PixelHeight}";
+
+                var exif = GetExifAndFilePropsFor(item.Name);
+                ExifDetailsPanel.ItemsSource = BuildFixedExifList(item.FullPath, bmp.PixelWidth, bmp.PixelHeight, exif);
+            }
+            catch
+            {
+                PreviewImage.Source = null;
+                ExifDetailsPanel.ItemsSource = null;
+            }
+        }
+
+        /* ======================= EXIF ======================= */
 
         private Dictionary<string, object> GetExifAndFilePropsFor(string fileName)
         {
@@ -386,35 +461,36 @@ namespace RSS_Image_Interoperability_Tool
 
             var props = new Dictionary<string, object>();
 
-            // File properties
+            // File props
             var fi = new FileInfo(fullPath);
             props["fileName"] = fi.Name;
             props["fileSizeBytes"] = fi.Length;
             props["createdUtc"] = fi.CreationTimeUtc;
             props["modifiedUtc"] = fi.LastWriteTimeUtc;
 
-            // EXIF
             try
             {
                 var dirs = ImageMetadataReader.ReadMetadata(fullPath);
 
                 var ifd0 = dirs.OfType<ExifIfd0Directory>().FirstOrDefault();
                 var subIfd = dirs.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-                var ifd = dirs.OfType<MetadataExtractor.Formats.Exif.ExifImageDirectory>().FirstOrDefault();
+                var ifd = dirs.OfType<ExifImageDirectory>().FirstOrDefault();
                 var gps = dirs.OfType<GpsDirectory>().FirstOrDefault();
 
                 int? width = ifd?.GetInt32(ExifDirectoryBase.TagImageWidth)
                           ?? subIfd?.GetInt32(ExifDirectoryBase.TagExifImageWidth);
                 int? height = ifd?.GetInt32(ExifDirectoryBase.TagImageHeight)
                            ?? subIfd?.GetInt32(ExifDirectoryBase.TagExifImageHeight);
-
                 if (width.HasValue) props["imageWidth"] = width.Value;
                 if (height.HasValue) props["imageHeight"] = height.Value;
 
                 string? make = ifd0?.GetDescription(ExifDirectoryBase.TagMake);
                 string? model = ifd0?.GetDescription(ExifDirectoryBase.TagModel);
-                if (!string.IsNullOrEmpty(make)) props["cameraMake"] = make;
-                if (!string.IsNullOrEmpty(model)) props["cameraModel"] = model;
+                if (!string.IsNullOrWhiteSpace(make)) props["cameraMake"] = make!;
+                if (!string.IsNullOrWhiteSpace(model)) props["cameraModel"] = model!;
+
+                string? lensModel = subIfd?.GetDescription(ExifDirectoryBase.TagLensModel);
+                if (!string.IsNullOrWhiteSpace(lensModel)) props["lensModel"] = lensModel!;
 
                 var fnum = subIfd?.GetRational(ExifDirectoryBase.TagFNumber);
                 if (fnum != null) props["fNumber"] = Math.Round(fnum.Value.ToDouble(), 3);
@@ -427,7 +503,8 @@ namespace RSS_Image_Interoperability_Tool
                 {
                     var seconds = exp.Value.ToDouble();
                     props["exposureSeconds"] = seconds;
-                    if (seconds > 0) props["exposureDisplay"] = seconds >= 1 ? $"{seconds:0.###} s" : $"1/{Math.Round(1 / seconds)} s";
+                    if (seconds > 0)
+                        props["exposureDisplay"] = seconds >= 1 ? $"{seconds:0.###} s" : $"1/{Math.Round(1 / seconds)} s";
                 }
 
                 var iso = subIfd?.GetInt32(ExifDirectoryBase.TagIsoEquivalent);
@@ -453,23 +530,124 @@ namespace RSS_Image_Interoperability_Tool
             _exifCache[fullPath] = props;
             return props;
         }
+
+        private static List<KeyValuePair<string, string>> BuildFixedExifList(
+            string fullPath,
+            int width,
+            int height,
+            IReadOnlyDictionary<string, object> exif)
+        {
+            string GetS(string key)
+            {
+                if (exif.TryGetValue(key, out var v) && v != null)
+                    return v switch
+                    {
+                        DateTime dt => dt.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"),
+                        double d => d.ToString("0.###", CultureInfo.InvariantCulture),
+                        float f => f.ToString("0.###", CultureInfo.InvariantCulture),
+                        _ => v.ToString() ?? "—"
+                    };
+                return "—";
+            }
+
+            var fi = new FileInfo(fullPath);
+            string sizeMb = (fi.Length / 1024d / 1024d).ToString("0.00") + " MB";
+            string dims = (width > 0 && height > 0) ? $"{width} × {height}" : "—";
+
+            return new List<KeyValuePair<string, string>>
+            {
+                new("File name",         fi.Name),
+                new("File size",         sizeMb),
+                new("Dimensions",        dims),
+                new("Camera make",       GetS("cameraMake")),
+                new("Camera model",      GetS("cameraModel")),
+                new("Lens model",        GetS("lensModel")),
+                new("F-number",          GetS("fNumber") is string f && f != "—" ? $"f/{f}" : "—"),
+                new("Exposure",          GetS("exposureDisplay") != "—" ? GetS("exposureDisplay") : GetS("exposureSeconds") + " s"),
+                new("ISO",               GetS("iso")),
+                new("Date taken",        GetS("dateTimeOriginal") != "—" ? GetS("dateTimeOriginal") : GetS("modifiedUtc"))
+            };
+        }
+
+        /* ======================= IMAGES Context Menu ======================= */
+
+        private ImageItem? GetContextImageItem()
+        {
+            // Prefer the current cell’s item, then SelectedItem
+            if (ImagesList.CurrentItem is ImageItem ci) return ci;
+            if (ImagesList.SelectedItem is ImageItem si) return si;
+            return null;
+        }
+
+        private void Ctx_CopyPath_Click(object sender, RoutedEventArgs e)
+        {
+            var it = GetContextImageItem(); if (it == null) return;
+            Clipboard.SetText(it.FullPath);
+        }
+
+        private void Ctx_CopyFolder_Click(object sender, RoutedEventArgs e)
+        {
+            var it = GetContextImageItem(); if (it == null) return;
+            var dir = System.IO.Path.GetDirectoryName(it.FullPath) ?? "";
+            if (!string.IsNullOrEmpty(dir)) Clipboard.SetText(dir);
+        }
+
+        private void Ctx_CopyFileUrl_Click(object sender, RoutedEventArgs e)
+        {
+            var it = GetContextImageItem(); if (it == null) return;
+
+            string url;
+            if (UseFileSchemeCheck.IsChecked == true)
+            {
+                try { url = new Uri(it.FullPath).AbsoluteUri; }
+                catch { url = it.FullPath; }
+            }
+            else
+            {
+                var baseUrl = ImagesBaseUrlBox.Text ?? "";
+                if (!baseUrl.EndsWith("/")) baseUrl += "/";
+                url = baseUrl + Uri.EscapeDataString(it.Name);
+            }
+            Clipboard.SetText(url);
+        }
+
+        private void Ctx_OpenFolder_Click(object sender, RoutedEventArgs e)
+        {
+            var it = GetContextImageItem(); if (it == null) return;
+            try
+            {
+                var arg = "/select,\"" + it.FullPath + "\"";
+                Process.Start(new ProcessStartInfo("explorer.exe", arg) { UseShellExecute = true });
+            }
+            catch { /* ignore */ }
+        }
+
+        private void Ctx_OpenImage_Click(object sender, RoutedEventArgs e)
+        {
+            var it = GetContextImageItem(); if (it == null) return;
+            if (File.Exists(it.FullPath))
+            {
+                try { Process.Start(new ProcessStartInfo(it.FullPath) { UseShellExecute = true }); }
+                catch { /* ignore */ }
+            }
+        }
     }
 
     public class CameraRow
     {
         public string Name { get; set; } = "";
-        public double X { get; set; }     // lon or local Easting (m)
-        public double Y { get; set; }     // lat or local Northing (m)
-        public double Alt { get; set; }   // height (m)
-        public double Heading { get; set; } // deg
-        public double Pitch { get; set; }   // deg
-        public double Roll { get; set; }    // deg
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Alt { get; set; }
+        public double Heading { get; set; }
+        public double Pitch { get; set; }
+        public double Roll { get; set; }
         public bool HasImage { get; set; }
     }
 
     internal static class GeoMath
     {
-        const double a = 6378137.0;                 // WGS84 semimajor
+        const double a = 6378137.0;
         const double f = 1.0 / 298.257223563;
         const double b = a * (1 - f);
         const double e2 = 1 - (b * b) / (a * a);
@@ -485,7 +663,6 @@ namespace RSS_Image_Interoperability_Tool
             double sinLon = Math.Sin(lon), cosLon = Math.Cos(lon);
             double sinLat = Math.Sin(lat), cosLat = Math.Cos(lat);
 
-            // ENU→ECEF rotation
             double r11 = -sinLon; double r12 = cosLon; double r13 = 0;
             double r21 = -sinLat * cosLon; double r22 = -sinLat * sinLon; double r23 = cosLat;
             double r31 = cosLat * cosLon; double r32 = cosLat * sinLon; double r33 = sinLat;

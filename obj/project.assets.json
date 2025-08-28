@@ -204,11 +204,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\RSS_Image_Interoperability_Tool.csproj",
+      "projectUniqueName": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\RSS_Image_Interoperability_Tool.csproj",
       "projectName": "RSS_Image_Interoperability_Tool",
-      "projectPath": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\RSS_Image_Interoperability_Tool.csproj",
+      "projectPath": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\RSS_Image_Interoperability_Tool.csproj",
       "packagesPath": "C:\\Users\\Chris\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\obj\\",
+      "outputPath": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
