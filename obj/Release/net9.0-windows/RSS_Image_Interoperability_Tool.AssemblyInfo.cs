@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RSS_Image_Interoperability_Tool")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+92ce19f7a191ff9f146f16c2e541e9dee7714265")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
 [assembly: System.Reflection.AssemblyProductAttribute("RSS_Image_Interoperability_Tool")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RSS_Image_Interoperability_Tool")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

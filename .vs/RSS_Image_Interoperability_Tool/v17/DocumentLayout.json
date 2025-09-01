@@ -1,26 +1,26 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\",
+  "WorkspaceRootPath": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|c:\\users\\chris\\documents\\github\\rss_image_interoperability_tool\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|c:\\users\\chris\\source\\repos\\rss_image_interoperability_tool\\rss_image_interoperability_tool.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|solutionrelative:rss_image_interoperability_tool.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|c:\\users\\chris\\source\\repos\\rss_image_interoperability_tool\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|c:\\users\\chris\\documents\\github\\rss_image_interoperability_tool\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|solutionrelative:app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|c:\\users\\chris\\documents\\github\\rss_image_interoperability_tool\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|c:\\users\\chris\\source\\repos\\rss_image_interoperability_tool\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|solutionrelative:assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|c:\\users\\chris\\documents\\github\\rss_image_interoperability_tool\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|c:\\users\\chris\\source\\repos\\rss_image_interoperability_tool\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|c:\\users\\chris\\documents\\github\\rss_image_interoperability_tool\\rss_image_interoperability_tool.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|solutionrelative:rss_image_interoperability_tool.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|c:\\users\\chris\\source\\repos\\rss_image_interoperability_tool\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BE20C16A-4511-4385-A3E4-36B0662A9F3F}|RSS_Image_Interoperability_Tool.csproj|solutionrelative:app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Chris\\AppData\\Local\\Temp\\.vsdbgsrc\\374c18e9f42fefdd550816ef7ed8e0adbb465b54ce1d7c3a7cc14e1855118d28\\RuntimeType.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
@@ -33,28 +33,31 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 3,
           "Children": [
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{56df62a4-05a3-4e5b-aa1a-99371ccfb997}"
+            },
+            {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "App.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\App.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\App.xaml.cs",
               "RelativeDocumentMoniker": "App.xaml.cs",
-              "ToolTip": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\App.xaml.cs",
+              "ToolTip": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\App.xaml.cs",
               "RelativeToolTip": "App.xaml.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-28T07:01:49.438Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-28T07:01:49.438Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
               "Title": "AssemblyInfo.cs",
-              "DocumentMoniker": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\AssemblyInfo.cs",
+              "DocumentMoniker": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\AssemblyInfo.cs",
               "RelativeDocumentMoniker": "AssemblyInfo.cs",
-              "ToolTip": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\AssemblyInfo.cs",
+              "ToolTip": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\AssemblyInfo.cs",
               "RelativeToolTip": "AssemblyInfo.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -62,15 +65,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "RSS_Image_Interoperability_Tool.csproj",
-              "DocumentMoniker": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\RSS_Image_Interoperability_Tool.csproj",
+              "DocumentMoniker": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\RSS_Image_Interoperability_Tool.csproj",
               "RelativeDocumentMoniker": "RSS_Image_Interoperability_Tool.csproj",
-              "ToolTip": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\RSS_Image_Interoperability_Tool.csproj",
+              "ToolTip": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\RSS_Image_Interoperability_Tool.csproj",
               "RelativeToolTip": "RSS_Image_Interoperability_Tool.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-08-27T17:17:05.311Z"
+              "WhenOpened": "2025-08-27T17:17:05.311Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -88,21 +92,21 @@
               "$type": "Document",
               "DocumentIndex": 3,
               "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\MainWindow.xaml.cs",
               "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAAIQCAAAAAAAAAAA9wMsCAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAACgEAAAAAAAAAAAowC0EAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-08-27T17:01:10.418Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "MainWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\MainWindow.xaml",
               "RelativeDocumentMoniker": "MainWindow.xaml",
-              "ToolTip": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\MainWindow.xaml",
               "RelativeToolTip": "MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2025-08-27T15:36:00.167Z",

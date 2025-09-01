@@ -25,12 +25,8 @@
         <!-- red -->
         <SolidColorBrush x:Key="DarkModeSuccessBrush" Color="#FF2E7D32"/>
         <!-- green -->
-        <SolidColorBrush x:Key="BlueRowBrush" Color="#FF2B88D8"/>
-        <!-- selection row -->
-        <SolidColorBrush x:Key="WhiteBrush" Color="#FFFFFFFF"/>
-        <SolidColorBrush x:Key="BlackBrush" Color="#FF000000"/>
 
-        <!-- BUTTONS -->
+        <!-- Buttons -->
         <Style TargetType="Button">
             <Setter Property="Background" Value="{StaticResource DarkModeAccentBrush}"/>
             <Setter Property="Foreground" Value="White"/>
@@ -69,7 +65,7 @@
             </Setter>
         </Style>
 
-        <!-- TEXTBOX -->
+        <!-- TextBox -->
         <Style TargetType="TextBox">
             <Setter Property="Background" Value="{StaticResource DarkModeLevel2Background}"/>
             <Setter Property="Foreground" Value="{StaticResource DarkModeForeground}"/>
@@ -84,12 +80,12 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Ensure all checkboxes/radios are WHITE text -->
+        <!-- Checkbox: force white captions -->
         <Style TargetType="CheckBox">
             <Setter Property="Foreground" Value="White"/>
         </Style>
 
-        <!-- UPPER-CASE BLUE GROUP HEADERS -->
+        <!-- Group headers -->
         <Style TargetType="GroupBox">
             <Setter Property="Background" Value="{StaticResource DarkModeLevel2Background}"/>
             <Setter Property="BorderBrush" Value="{StaticResource DarkModeBorderBrush}"/>
@@ -99,7 +95,6 @@
                 <Setter.Value>
                     <DataTemplate>
                         <TextBlock Text="{Binding}"
-                                   TextWrapping="NoWrap"
                                    Foreground="{StaticResource DarkModeAccentBrush}"
                                    FontSize="14"
                                    FontWeight="Black"
@@ -109,7 +104,7 @@
             </Setter>
         </Style>
 
-        <!-- DATAGRID base -->
+        <!-- DataGrid base -->
         <Style TargetType="DataGrid">
             <Setter Property="Background" Value="{StaticResource DarkModeLevel2Background}"/>
             <Setter Property="Foreground" Value="{StaticResource DarkModeForeground}"/>
@@ -130,40 +125,9 @@
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
         </Style>
 
-        <!-- Row = blue when selected -->
-        <Style x:Key="BlueRowStyle" TargetType="DataGridRow">
-            <Setter Property="Background" Value="{StaticResource DarkModeLevel2Background}"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="{StaticResource BlueRowBrush}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- Cell = WHITE when selected; otherwise inherit -->
-        <Style x:Key="WhiteSelectedCellStyle" TargetType="DataGridCell">
+        <Style TargetType="DataGridCell">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="{StaticResource WhiteBrush}"/>
-                    <Setter Property="Foreground" Value="{StaticResource BlackBrush}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- CSV grid rows coloured by HasImage -->
-        <Style x:Key="CsvRowColorStyle" TargetType="DataGridRow" BasedOn="{StaticResource BlueRowStyle}">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding HasImage}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource DarkModeSuccessBrush}"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding HasImage}" Value="False">
-                    <Setter Property="Background" Value="{StaticResource DarkModeErrorBrush}"/>
-                </DataTrigger>
-                <!-- keep white active cell even on coloured rows -->
-            </Style.Triggers>
         </Style>
     </Window.Resources>
 
@@ -173,7 +137,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- ======= Centered Title + Subtitle ======= -->
+        <!-- Title / subtitle -->
         <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,10">
             <TextBlock Text="RSS IMAGE INTEROPERABILITY TOOL"
                        FontSize="22"
@@ -187,14 +151,13 @@
                        Margin="0,2,0,0"/>
         </StackPanel>
 
-        <!-- ======= Body: Left / Right ======= -->
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- ================= LEFT ================= -->
+            <!-- LEFT -->
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -205,7 +168,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Project stats -->
+                <!-- Stats -->
                 <GroupBox Grid.Row="0" Header="PROJECT STATS" Margin="0,0,12,10">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -215,6 +178,7 @@
                             <ColumnDefinition Width="80"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -234,7 +198,12 @@
                         <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" Margin="0,6,0,0"
                                    x:Name="CoordSummaryText"
                                    Foreground="{StaticResource DarkModeSecondaryForeground}"
-                                   Text="Coordinate mode: WGS84 (x=lon, y=lat, alt=height) — will export as-is."/>
+                                   Text="Coordinate mode: WGS84 (x=lon, y=lat, alt=height) - will export as-is."/>
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" Margin="0,2,0,0"
+                                   x:Name="AnglesSummaryText"
+                                   Foreground="{StaticResource DarkModeSecondaryForeground}"
+                                   Text="Angles: using CSV heading/pitch/roll as-is."/>
                     </Grid>
                 </GroupBox>
 
@@ -246,12 +215,12 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <!-- CSV -->
+                        <!-- CSV (with Clear) -->
                         <Grid Grid.Row="0" Margin="0,0,0,6">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="220"/>
-                                <ColumnDefinition Width="80"/>    <!-- NEW: Clear -->
+                                <ColumnDefinition Width="80"/>
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Orientation="Vertical" Grid.ColumnSpan="3">
@@ -260,7 +229,7 @@
 
                             <TextBox x:Name="CsvPathBox" Grid.Column="0" IsReadOnly="True" Margin="0,0,6,0"/>
                             <Button Grid.Column="1" Content="Import CSV..." Click="BrowseCsv_Click" Margin="0,0,6,0"/>
-                            <Button Grid.Column="2" Content="Clear" Click="ClearCsv_Click"/>   <!-- NEW -->
+                            <Button Grid.Column="2" Content="Clear" Click="ClearCsv_Click"/>
                         </Grid>
 
                         <!-- Images -->
@@ -291,26 +260,24 @@
                               CanUserAddRows="False"
                               CanUserDeleteRows="False"
                               EnableRowVirtualization="True"
-                              SelectionUnit="CellOrRowHeader"
+                              SelectionUnit="FullRow"
                               SelectionMode="Extended"
-                              SelectionChanged="ImagesList_SelectionChanged">
-
-                        <!-- Blue row highlight -->
+                              SelectionChanged="ImagesList_SelectionChanged"
+                              PreviewMouseRightButtonUp="ImagesList_PreviewMouseRightButtonUp">
+                        <!-- Blue row + white active cells -->
                         <DataGrid.RowStyle>
                             <Style TargetType="DataGridRow">
                                 <Setter Property="Background" Value="{StaticResource DarkModeLevel2Background}"/>
                                 <Setter Property="Foreground" Value="White"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsSelected" Value="True">
-                                        <Setter Property="Background" Value="#223EA6FF"/>   <!-- subtle blue fill -->
+                                        <Setter Property="Background" Value="#223EA6FF"/>
                                         <Setter Property="BorderBrush" Value="#FF3EA6FF"/>
                                         <Setter Property="BorderThickness" Value="1"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </DataGrid.RowStyle>
-
-                        <!-- White active cell; non-active cells keep row blue -->
                         <DataGrid.CellStyle>
                             <Style TargetType="DataGridCell">
                                 <Setter Property="Foreground" Value="White"/>
@@ -332,18 +299,6 @@
                             <DataGridTextColumn Header="Width" Binding="{Binding Width}" Width="90"/>
                             <DataGridTextColumn Header="Height" Binding="{Binding Height}" Width="90"/>
                         </DataGrid.Columns>
-
-                        <!-- Right-click context menu -->
-                        <DataGrid.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Copy file path" Click="Ctx_CopyPath_Click"/>
-                                <MenuItem Header="Copy folder path" Click="Ctx_CopyFolder_Click"/>
-                                <MenuItem Header="Copy file:// URL" Click="Ctx_CopyFileUrl_Click"/>
-                                <Separator/>
-                                <MenuItem Header="Open containing folder" Click="Ctx_OpenFolder_Click"/>
-                                <MenuItem Header="Open image" Click="Ctx_OpenImage_Click"/>
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>
                     </DataGrid>
                 </GroupBox>
 
@@ -399,7 +354,7 @@
                 </Grid>
             </Grid>
 
-            <!-- ================= RIGHT (Settings + CSV Rows) ================= -->
+            <!-- RIGHT -->
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -460,7 +415,6 @@
                             <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Text="Pin icon (relative URL)"/>
                             <TextBox   Grid.Row="2" Grid.Column="1" x:Name="PinIconUrlBox" Text="/icons/camera-pin.png"/>
 
-                            <!-- DEFAULT ON -->
                             <CheckBox Grid.Row="3" Grid.ColumnSpan="2" Margin="0,6,0,0"
                                       x:Name="UseFileSchemeCheck"
                                       IsChecked="True"
@@ -469,9 +423,28 @@
 
                         <TextBlock Text="EXPORT OPTIONS" Foreground="{StaticResource DarkModeAccentBrush}" FontWeight="Black" Margin="0,6,0,6"/>
                         <StackPanel Orientation="Vertical" Margin="6,0,0,6">
-                            <!-- DEFAULT ON -->
                             <CheckBox x:Name="OnlyMatchedCheck" Content="Export only rows that have a matching image" IsChecked="True"/>
                             <CheckBox x:Name="IncludeExifCheck" Content="Include EXIF &amp; file properties in GeoJSON" IsChecked="True"/>
+                            <CheckBox x:Name="IncludeHprCheck"
+                                      Content="Include heading/pitch/roll (HPR) in GeoJSON"
+                                      IsChecked="True"
+                                      ToolTip="When checked: If OPK + convert is on, exports Cesium HPR (radians, east-radians). Otherwise, exports CSV HPR as-is."/>
+                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                <TextBlock VerticalAlignment="Center" Text="CSV HPR convention" Margin="0,0,8,0"/>
+                                <ComboBox x:Name="CsvHprConventionCombo" Width="260" SelectedIndex="0" SelectedValuePath="Tag"
+                                          ToolTip="Choose how to tag CSV HPR when not converting OPK.">
+                                    <ComboBoxItem Content="North (deg from North, clockwise)" Tag="north-degrees"/>
+                                    <ComboBoxItem Content="East (deg from East, counter‑clockwise)" Tag="east-degrees"/>
+                                </ComboBox>
+                            </StackPanel>
+                            <TextBlock x:Name="CsvHprConventionHint"
+                                       Margin="0,2,0,0"
+                                       Foreground="{StaticResource DarkModeSecondaryForeground}"
+                                       Text="Used to tag CSV HPR as north-degrees or east-degrees."/>
+                            <CheckBox x:Name="ConvertOpkCheck"
+                                      Content="Convert RealityCapture omega/phi/kappa to Cesium heading/pitch/roll (radians)"
+                                      IsChecked="True"
+                                      ToolTip="When CSV headers are omega/phi/kappa, convert to Cesium HPR in radians for GeoJSON. Uncheck to export raw CSV angles as-is."/>
                         </StackPanel>
 
                         <StackPanel Orientation="Vertical" Margin="0,0,0,4">
@@ -490,11 +463,31 @@
                               CanUserAddRows="False"
                               CanUserDeleteRows="False"
                               EnableRowVirtualization="True"
-                              SelectionUnit="CellOrRowHeader"
+                              SelectionUnit="FullRow"
                               SelectionMode="Extended"
-                              RowStyle="{StaticResource CsvRowColorStyle}">
+                              PreviewMouseRightButtonUp="CsvRowsGrid_PreviewMouseRightButtonUp">
 
-                        <!-- White active cell on selection -->
+                        <!-- Row colors -->
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="Background" Value="{StaticResource DarkModeLevel2Background}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasImage}" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource DarkModeSuccessBrush}"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding HasImage}" Value="False">
+                                        <Setter Property="Background" Value="{StaticResource DarkModeErrorBrush}"/>
+                                    </DataTrigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="BorderBrush" Value="#FF3EA6FF"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+
+                        <!-- White active cell -->
                         <DataGrid.CellStyle>
                             <Style TargetType="DataGridCell">
                                 <Setter Property="Foreground" Value="White"/>

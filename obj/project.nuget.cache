@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "mE/Y46FlOX8=",
+  "dgSpecHash": "L5P2vKKsEos=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Chris\\Documents\\GitHub\\RSS_Image_Interoperability_Tool\\RSS_Image_Interoperability_Tool.csproj",
+  "projectFilePath": "C:\\Users\\Chris\\source\\repos\\RSS_Image_Interoperability_Tool\\RSS_Image_Interoperability_Tool.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Chris\\.nuget\\packages\\metadataextractor\\2.8.1\\metadataextractor.2.8.1.nupkg.sha512",
     "C:\\Users\\Chris\\.nuget\\packages\\microsoft.netcore.platforms\\2.1.2\\microsoft.netcore.platforms.2.1.2.nupkg.sha512",
